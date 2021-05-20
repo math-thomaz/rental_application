@@ -1,0 +1,74 @@
+import { inject, injectable } from "tsyringe";
+
+import { ICarsRepository } from "@modules/cars/repositories/ICarsRepository";
+import { Rental } from "@modules/rentals/infra/typeorm/entities/Rental";
+import { IRentalsRepository } from "@modules/rentals/repositories/IRentalsRepository";
+import { IDateProvider } from "@shared/container/providers/DateProvider/IDateProvider";
+import { AppError } from "@shared/errors/AppError";
+
+interface IRequest {
+  user_id: string;
+  car_id: string;
+  expected_return_date: Date;
+}
+
+@injectable()
+class CreateRentalUseCase {
+  constructor(
+    @inject("RentalsRepository")
+    private rentalsRepository: IRentalsRepository,
+    @inject("DayjsDateProvider")
+    private dateProvider: IDateProvider,
+    @inject("CarsRepository")
+    private carsRepository: ICarsRepository
+  ) {}
+
+  async execute({
+    user_id,
+    car_id,
+    expected_return_date,
+  }: IRequest): Promise<Rental> {
+    const minimumHour = 24;
+
+    const carUnavailable = await this.rentalsRepository.findOpenRentalByCar(
+      car_id
+    );
+
+    if (carUnavailable) {
+      throw new AppError(
+        "Sorry for the inconvenience, but the chose car is unavailable"
+      );
+    }
+
+    const rentalOpenedByUser =
+      await this.rentalsRepository.findOpenRentalByUser(user_id);
+
+    if (rentalOpenedByUser) {
+      throw new AppError("There is an opened rental for this user");
+    }
+
+    const dateNow = this.dateProvider.dateNow();
+
+    const compareTimeForValidation = this.dateProvider.compareInHours(
+      dateNow,
+      expected_return_date
+    );
+
+    if (compareTimeForValidation < minimumHour) {
+      throw new AppError(
+        "You need to choose a time of 24 hours minimum to return a rented car"
+      );
+    }
+
+    const generateRental = await this.rentalsRepository.create({
+      user_id,
+      car_id,
+      expected_return_date,
+    });
+
+    await this.carsRepository.updateAvailable(car_id, false);
+
+    return generateRental;
+  }
+}
+export { CreateRentalUseCase };

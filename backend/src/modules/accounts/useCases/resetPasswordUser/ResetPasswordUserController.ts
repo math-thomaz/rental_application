@@ -3,7 +3,7 @@ import { container } from "tsyringe";
 
 import { ResetPasswordUserUseCase } from "./ResetPasswordUserUseCase";
 
-class ResetPasswordController {
+class ResetPasswordUserController {
   async handle(request: Request, response: Response): Promise<Response> {
     const { token } = request.query;
     const { password } = request.body;
@@ -17,4 +17,4 @@ class ResetPasswordController {
   }
 }
 
-export { ResetPasswordController };
+export { ResetPasswordUserController };
