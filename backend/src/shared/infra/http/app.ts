@@ -8,7 +8,6 @@ import swaggerUI from "swagger-ui-express";
 import upload from "@config/upload";
 import * as Sentry from "@sentry/node";
 import * as Tracing from "@sentry/tracing";
-
 import "@shared/container";
 
 import { AppError } from "@shared/errors/AppError";

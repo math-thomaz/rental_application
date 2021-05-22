@@ -5,7 +5,7 @@ import { ICreateUserDTO } from "@modules/accounts/dtos/ICreateUserDTO";
 import { IUsersRepository } from "@modules/accounts/repositories/IUsersRepository";
 import { AppError } from "@shared/errors/AppError";
 
-injectable();
+@injectable()
 class CreateUserUseCase {
   constructor(
     @inject("UsersRepository")
@@ -15,13 +15,13 @@ class CreateUserUseCase {
   async execute({
     name,
     email,
-    driver_license,
     password,
+    driver_license,
   }: ICreateUserDTO): Promise<void> {
     const userAlreadyExists = await this.usersRepository.findByEmail(email);
 
     if (userAlreadyExists) {
-      throw new AppError("User already exists");
+      throw new AppError("User already exists!");
     }
 
     const passwordHash = await hash(password, 8);
@@ -29,8 +29,8 @@ class CreateUserUseCase {
     await this.usersRepository.create({
       name,
       email,
-      driver_license,
       password: passwordHash,
+      driver_license,
     });
   }
 }
