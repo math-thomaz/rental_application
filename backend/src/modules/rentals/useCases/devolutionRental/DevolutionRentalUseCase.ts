@@ -46,7 +46,7 @@ class DevolutionRentalUseCase {
 
     let total = 0;
 
-    if (lateDevolution > 0) {
+    if (dailyDays > 0) {
       const calculateFineAmount = lateDevolution * car.fine_amount;
       total = calculateFineAmount;
     }

@@ -1,13 +1,13 @@
 import { Router } from "express";
 
-import { CreateCarSpecificationController } from "@modules/cars/useCases/createCarSpecification/CreateCarSpecificationController";
+import { CreateSpecificationController } from "@modules/cars/useCases/createSpecification/CreateSpecificationController";
 
 import { ensureAdmin } from "../middlewares/ensureAdmin";
 import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
 
 const specificationsRoutes = Router();
 
-const createSpecificationController = new CreateCarSpecificationController();
+const createSpecificationController = new CreateSpecificationController();
 
 specificationsRoutes.post(
   "/",
